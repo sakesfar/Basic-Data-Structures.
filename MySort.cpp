@@ -7,7 +7,7 @@ My understanding of Insertion Sort.
 IDEA: make use of the fact that elements from 0 to p -1 (passes) are already sorted.
 We start checking from p = 1 to N-1 , comparing element at p with all before p.
 */
-
+const int ASCIINUM = 256;
 void mergeSort(std::vector<int>& data, std::vector<int>& copy, int left, int right);
 void merge(std::vector<int>& data, std::vector<int>& copy, int left, int right, int rightEnd);
 void quickSortImproved(std::vector<int>& data, int left, int right);
