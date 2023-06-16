@@ -225,6 +225,34 @@ void quickSortImproved(std::vector<int>& data, int left, int right)
 
 }
 
+//Sorting strings if we know that they all got equal length
+void radixLSDstringSort(std::vector<std::string>& data, int strlen)
+{
+    
+    std::vector<std::vector<std::string>> buckets(ASCIINUM);
+
+    for (int i = strlen-1; i >= 0; --i)
+    {
+        for (std::string &s : data)
+        {
+            buckets[s[i]].push_back(std::move(s));
+        }
+
+        int index{ 0 };
+
+        for (auto &currentBucket : buckets)
+        {
+            for (std::string &s : currentBucket)
+            {
+                data[index++] = std::move(s);
+                
+            }
+            currentBucket.clear();
+        }
+    }
+
+}
+
 
 int main()
 {
