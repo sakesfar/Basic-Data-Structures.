@@ -111,6 +111,28 @@ public:
         }
     }
 
+Node* findMax( Node* root)
+    {
+        Node* temp = root;
+        if (temp != nullptr)
+            while (temp->right != nullptr)
+                temp = temp->right;
+
+        return temp;
+                
+    }
+
+    Node* findMin(Node* root)
+    {
+        Node* temp = root;
+        if (temp != nullptr)
+            while (temp->left != nullptr)
+                temp = temp->left;
+
+        return temp;
+
+    }
+
 };
 
 int main()
