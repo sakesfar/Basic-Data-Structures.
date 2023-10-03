@@ -30,8 +30,7 @@ public:
         assert(m_data != nullptr);
 
         if (isFull()) {
-            // Decide your behavior here: reject or overwrite.
-            // For this example, we'll overwrite the oldest data.
+       
             m_head = (m_head + 1) % m_capacity;
         }
 
