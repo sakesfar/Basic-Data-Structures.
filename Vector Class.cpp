@@ -1,75 +1,55 @@
 #include <iostream>
+#include <cassert>
 
 template <typename Object>
-
-class Vector
-{
+class Vector {
 private:
     int m_size;
     int m_capacity;
     Object* m_ptr;
+
 public:
-    explicit Vector(int size = 0) : m_size{ size }, m_capacity{size+5}
-    {
+    explicit Vector(int size = 0) : m_size{ size }, m_capacity{ size == 0 ? 1 : size * 2 } {
         m_ptr = new Object[m_capacity];
     }
 
-    ~Vector() { delete[] m_ptr; }
+    ~Vector() {
+        if(m_ptr != nullptr)
+            delete[] m_ptr;
+    }
 
-    //Copy constructor with deep copying
-    Vector(const Vector<Object>& a)
-    {
-        m_size = a.m_size;
-        m_capacity = a.m_capacity;
-        m_ptr = new Object[m_capacity];
-
-        for (int i = 0; i < m_size; ++i)
-        {
+    // Copy constructor with deep copying
+    Vector(const Vector<Object>& a) : m_size{ a.m_size }, m_capacity{ a.m_capacity }, m_ptr{ new Object[a.m_capacity] } {
+        for (int i = 0; i < m_size; ++i) {
             m_ptr[i] = a.m_ptr[i];
         }
-
     }
 
-    //Copy assignemnt with deep copying
-    Vector& operator = (const Vector<Object>& a)
-    {
-        if (&a == this)
-            return *this;
+    // Copy assignment with deep copying
+    Vector& operator=(const Vector<Object>& a) {
+        if (&a == this) return *this;
 
-        //delete existing pointer and deep copy from Vector 'a'
         delete[] m_ptr;
 
         m_size = a.m_size;
         m_capacity = a.m_capacity;
         m_ptr = new Object[m_capacity];
-
-        for (int i = 0; i < m_size; ++i)
-        {
+        for (int i = 0; i < m_size; ++i) {
             m_ptr[i] = a.m_ptr[i];
         }
-        
         return *this;
     }
 
-    //In case there is no need to COPY, it is more efficient to utilize MOVE SEMANTICS! 
-
-    //1.Move copy c-r
-    Vector(Vector<Object>&& a) noexcept
-    {
-        m_size = a.m_size;
-        m_capacity = a.m_capacity;
-        m_ptr = a.m_ptr;
-
+    // Move copy constructor
+    Vector(Vector<Object>&& a) noexcept : m_size{ a.m_size }, m_capacity{ a.m_capacity }, m_ptr{ a.m_ptr } {
         a.m_ptr = nullptr;
         a.m_size = 0;
         a.m_capacity = 0;
     }
 
-    //2.Move assignment
-    Vector& operator= (Vector<Object>&& a) noexcept
-    {
-        if (&a == this)
-            return *this;
+    // Move assignment
+    Vector& operator=(Vector<Object>&& a) noexcept {
+        if (&a == this) return *this;
 
         delete[] m_ptr;
 
@@ -84,97 +64,55 @@ public:
         return *this;
     }
 
-
-
-    void reserve(int newCapacity)
-    {
-        if (newCapacity < m_size)
-            return;
+    void reserve(int newCapacity) {
+        if (newCapacity <= m_size) return;
 
         Object* newObject = new Object[newCapacity];
-        
-        for (int i = 0; i < m_size; ++i)
-        {
-            newObject[i] = m_ptr[i];
-            
+        for (int i = 0; i < m_size; ++i) {
+            newObject[i] = std::move(m_ptr[i]);
         }
 
-        delete[] m_ptr;           
         m_capacity = newCapacity;
-        m_ptr = new Object[m_capacity];
-
-        for (int i = 0; i < m_size; ++i)
-        {
-            m_ptr[i] = newObject[i];
-        }
-
+        std::swap(m_ptr, newObject);
         delete[] newObject;
-
-
     }
 
-    void resize(int newSize)
-    {
+    void resize(int newSize) {
         if (newSize > m_capacity)
             reserve(newSize * 2);
-
         m_size = newSize;
-
     }
 
-    void push_back(const Object& obj)
-    {
+    void push_back(const Object& obj) {
         if (m_size == m_capacity)
-            reserve(2 * m_capacity + 1);
-
+            reserve(2 * m_capacity);
         m_ptr[m_size++] = obj;
     }
 
-    void pop_back()
-    {
+    void pop_back() {
+        assert(m_size > 0);  // Check if vector is not empty
         --m_size;
     }
 
-    Object& operator[] (int index)
-    {
+    Object& operator[](int index) {
+        assert(index >= 0 && index < m_size); // Range check
         return m_ptr[index];
     }
 
-    const Object& operator[] (int index) const
-    {
+    const Object& operator[](int index) const {
+        assert(index >= 0 && index < m_size); // Range check
         return m_ptr[index];
     }
 
-    int size() const
-    {
+    int size() const {
         return m_size;
     }
 
-    int capacity() const
-    {
+    int capacity() const {
         return m_capacity;
     }
-};
 
-int main()
-{
-    Vector<int> vec{};
-    vec.push_back(5);
-    vec.push_back(4);
-    vec.push_back(3);
-    vec.push_back(2);
-    vec.push_back(1);
-    vec.push_back(0);
-    
-    Vector<int> copy{ std::move(vec) };
-    //vec.pop_back();
-    std::cout << "vec size:" << vec.size() << "  vec capacity:" << vec.capacity() << '\n';
-
-    for (int i = 0; i < copy.size(); ++i)
-    {
-        std::cout << copy[i] << ' ';
+    bool empty() const {
+        return m_size == 0;
     }
-    return 0;
-}
-
-
+};
