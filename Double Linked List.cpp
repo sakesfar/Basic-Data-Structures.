@@ -93,20 +93,7 @@ public:
         --m_size;
     }
 
-    Node* getNodeAt(unsigned int index) {
-        assert(index < m_size);  // Index should be 0-based
-
-        Node* temp = m_head;
-        for (unsigned int i = 0; i < index; ++i) {
-            temp = temp->next;
-        }
-        return temp;
-    }
-
-    const Node* begin() const {
-        return m_head;
-    }
-
+    
     void printData() const {
         Node* temp = m_head;
         while (temp) {
@@ -138,15 +125,18 @@ class iterator;
     public:
         iterator(Node* ptr = nullptr) : current{ptr} {}
 
-        // Overload for the * dereference operator
-        Object& operator*() {
-            return current->data;
-        }
+Object& operator*() {
+    assert(current != nullptr);
+    return current->data;
+}
 
-        // Overload for the -> dereference operator
-        Object* operator->() {
-            return &current->data;
-        }
+// Overload for the -> dereference operator
+Object* operator->() {
+    assert(current != nullptr);
+    return &current->data;
+}
+
+        
 
         // Prefix ++
         iterator& operator++() {
