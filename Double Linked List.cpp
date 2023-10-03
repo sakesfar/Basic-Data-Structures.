@@ -118,4 +118,73 @@ public:
     int size() const {
         return m_size;
     }
+
+public:
+
+class iterator;
+
+
+ iterator begin() {
+        return iterator(m_head);
+    }
+
+    iterator end() {
+        return iterator(nullptr);
+    }
+
+    class iterator {
+        Node* current;
+
+    public:
+        iterator(Node* ptr = nullptr) : current{ptr} {}
+
+        // Overload for the * dereference operator
+        Object& operator*() {
+            return current->data;
+        }
+
+        // Overload for the -> dereference operator
+        Object* operator->() {
+            return &current->data;
+        }
+
+        // Prefix ++
+        iterator& operator++() {
+            current = current->next;
+            return *this;
+        }
+
+        // Postfix ++
+        iterator operator++(int) {
+            iterator old = *this;
+            current = current->next;
+            return old;
+        }
+
+        // Prefix --
+        iterator& operator--() {
+            current = current->previous;
+            return *this;
+        }
+
+        // Postfix --
+        iterator operator--(int) {
+            iterator old = *this;
+            current = current->previous;
+            return old;
+        }
+
+        // Equality check
+        bool operator==(const iterator& rhs) const {
+            return current == rhs.current;
+        }
+
+        // Inequality check
+        bool operator!=(const iterator& rhs) const {
+            return !(*this == rhs);
+        }
+    };
+
+
+
 };
