@@ -52,11 +52,15 @@ public:
         ++m_size;
     }
 
-    void insert(Node* nextNode, const Object& data) {
-        assert(nextNode != nullptr);
+    void insert(iterator pos, const Object& data) {
+        assert(pos != nullptr); // Ensure iterator isn't pointing to the end
+        Node* nextNode = pos.current;
         Node* newNode = new Node(data, nextNode, nextNode->previous);
+        
         if (nextNode->previous) {
             nextNode->previous->next = newNode;
+        } else {
+            m_head = newNode; // In case inserting at the beginning
         }
         nextNode->previous = newNode;
 
