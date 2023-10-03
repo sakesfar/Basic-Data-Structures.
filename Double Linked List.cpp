@@ -27,11 +27,14 @@ public:
         //m_tail = nullptr;
     }
 
-    ~List()
-    {
-        delete m_head;
-        
+   ~List() {
+    Node* curr = m_head;
+    while (curr) {
+        Node* nextNode = curr->next;
+        delete curr;
+        curr = nextNode;
     }
+}
 
     void push_front(const Object& data)
     {
@@ -61,28 +64,20 @@ public:
                 
     }
 
-    void push_back(const Object& data)
-    {
-        Node* newNode = new Node;
-        newNode->data = data;
-        newNode->next = nullptr;
-
-        Node* begin = m_head;
-
-        //traverse till last node
-        while (m_head->next != nullptr)
-        {
-            m_head = m_head->next;
+    void push_back(const Object& data) {
+    Node* newNode = new Node(data);
+    if (!m_head) {
+        m_head = newNode;
+    } else {
+        Node* temp = m_head;
+        while (temp->next) {
+            temp = temp->next;
         }
-
-        
-        newNode->previous = m_head;
-        m_head->next = newNode;
-
-        m_head = begin;
-        begin = nullptr;
-        ++m_size;
+        temp->next = newNode;
+        newNode->previous = temp;
     }
+    ++m_size;
+}
 
     //insert Object before Node
     void insert(Node* nextNode, const Object& data)
@@ -130,54 +125,29 @@ public:
         
     }
 
-    Node* getNodeAt(unsigned int index)
-    {
-        assert(index <= m_size);
-
-        Node* begin = m_head;
-        Node* node = nullptr;
-        int count{};
-        static bool check = true;
-
-        while (check)
-        {
-            //node = m_head->next->previous;
-            node = m_head;
-            m_head = m_head->next;
-            ++count;
-
-            if (count == index)
-                check = false;
-        }
-
-        //reset m_head to the beginning
-        m_head = begin;
-        begin = nullptr;
-        return node;
+    Node* getNodeAt(unsigned int index) 
+{
+    assert(index < m_size);  
+    Node* temp = m_head;
+    for (unsigned int i = 0; i < index; ++i) {
+        temp = temp->next;
     }
+    return temp;
+}
 
      const Node* begin()
     {
         return m_head;
     }
 
-    void printData()
-    {
-        Node* last = m_head;
-        Node* copyHead = m_head;
-
-        while (last->next != nullptr)
-        {
-            std::cout << m_head->data << '\n';
-            last = m_head;
-            m_head = m_head->next;
-            
-        }
-
-        //reset head to the beginning of the list
-        m_head = copyHead;
-        copyHead = nullptr;
+    void printData() 
+{
+    Node* temp = m_head;
+    while (temp) {
+        std::cout << temp->data << '\n';
+        temp = temp->next;
     }
+}
 
     int size()
     {
