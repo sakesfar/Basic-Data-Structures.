@@ -1,7 +1,6 @@
 #include <iostream>
 
 template <typename Object>
-
 class BTree
 {
 private:
@@ -11,6 +10,8 @@ private:
         Node* left;
         Node* right;
     };
+
+    Node* m_root = nullptr;
 
     void destroy_tree(Node* leaf)
     {
@@ -22,134 +23,98 @@ private:
         }
     }
 
-    Node* m_root;
+    void insert(const Object& obj, Node*& leaf)
+    {
+        if (leaf == nullptr)
+        {
+            leaf = new Node;
+            leaf->data = obj;
+            leaf->left = nullptr;
+            leaf->right = nullptr;
+            return;
+        }
+
+        if (obj < leaf->data)
+        {
+            insert(obj, leaf->left);
+        }
+        else
+        {
+            insert(obj, leaf->right);
+        }
+    }
+
+    Node* search(const Object& obj, const Node* leaf) const
+    {
+        if (leaf == nullptr)
+        {
+            return nullptr;
+        }
+
+        if (obj == leaf->data)
+            return leaf;
+
+        if (obj < leaf->data)
+            return search(obj, leaf->left);
+        else
+            return search(obj, leaf->right);
+    }
 
 public:
-    BTree(const Object& obj = Object{})
-    {
-        m_root = new Node;
-        m_root->data = obj;
-        m_root->left = nullptr;
-        m_root->right = nullptr;
-    }
+    BTree() = default;
 
     ~BTree() 
     {
         destroy_tree(m_root);
     }
 
-    void insert(const Object& obj,  Node* leaf)
+    void insert(const Object& obj)
     {
-        if (obj < leaf->data)
-        {
-            if (leaf->left != nullptr)            
-                insert(obj, leaf->left);
-            else
-            {
-                leaf->left = new Node;
-                leaf->left->data = obj;
-                leaf->left->left = nullptr;
-                leaf->left->right = nullptr;
-            }
-            
-        }
-
-        else if (obj >= leaf->data)
-        {
-            if (leaf->right != nullptr)
-                insert(obj, leaf->right);
-            else
-            {
-                leaf->right = new Node;
-                leaf->right->data = obj;
-                leaf->right->left = nullptr;
-                leaf->right->right = nullptr;
-            }
-
-        }
+        insert(obj, m_root);
     }
 
-    Node* search(const Object& obj, const Node* leaf)
+    Node* search(const Object& obj) const
     {
-        if (leaf != nullptr)
-        {
-            if (obj == leaf->data)
-                return leaf;
-
-            if (obj < leaf->data)
-                return search(obj, leaf->left);
-            else
-                return search(obj, leaf->right);
-        }
-
-        else
+        Node* result = search(obj, m_root);
+        if (result == nullptr)
         {
             std::cout << "COULD NOT FIND REQUESTED DATA!\n";
-            return nullptr;
         }
+        return result;
     }
 
-    Node* getRoot()
+    Node* getRoot() const
     {
         return m_root;
     }
 
-    void printDataAscending(const Node* root )
+    void printDataAscending(const Node* root) const
     {
-
         if (root != nullptr)
         {
             printDataAscending(root->left);
             std::cout << " " << root->data;
             printDataAscending(root->right);
         }
+    }
 
-        else
+    Node* findMax(Node* root) const
+    {
+        Node* temp = root;
+        while (temp && temp->right != nullptr)
         {
-            //std::cout << "\nEND!\n";
-            return;
+            temp = temp->right;
         }
+        return temp;
     }
 
-Node* findMax( Node* root)
+    Node* findMin(Node* root) const
     {
         Node* temp = root;
-        if (temp != nullptr)
-            while (temp->right != nullptr)
-                temp = temp->right;
-
+        while (temp && temp->left != nullptr)
+        {
+            temp = temp->left;
+        }
         return temp;
-                
     }
-
-    Node* findMin(Node* root)
-    {
-        Node* temp = root;
-        if (temp != nullptr)
-            while (temp->left != nullptr)
-                temp = temp->left;
-
-        return temp;
-
-    }
-
 };
-
-int main()
-{
-    BTree<int> binTree{ 8 };
-    binTree.insert(10, binTree.getRoot());
-    binTree.insert(15, binTree.getRoot());
-    binTree.insert(2, binTree.getRoot());
-    binTree.insert(16, binTree.getRoot());
-    binTree.insert(21, binTree.getRoot());
-    binTree.insert(28, binTree.getRoot());
-    binTree.insert(29, binTree.getRoot());
-    binTree.insert(5, binTree.getRoot());
-    binTree.insert(35, binTree.getRoot());
-    binTree.printDataAscending(binTree.getRoot());
-
-    return 0;
-
-}
-
