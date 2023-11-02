@@ -59,35 +59,29 @@ void selectionSort(std::vector<int>& data)
 
 void shellSort(std::vector<int>& data)
 {
-    
-    int gap = data.size() / 2;
-
-    for (gap; gap > 0; gap /= 2)
+    int n = data.size();
+    // Start with a big gap, then reduce the gap
+    for (int gap = n / 2; gap > 0; gap /= 2)
     {
-        int interval = gap;
-
-        for (int i = 0; i + gap<data.size(); ++i)
+        
+        for (int i = gap; i < n; i += 1)
         {
-            
-            if (data[i] > data[interval])            
-                std::swap(data[i], data[interval]);              
-                      
-            
-            if (i - gap > 0)          
-            {                                               
-                for (int j=i; j-gap >= 0; j -= gap)
-                    if (data[j] < data[j - gap])                    
-                        std::swap(data[j], data[j - gap]);                   
-                                    
+            // add data[i] to the elements that have been gap sorted
+            // save data[i] in temp and make a hole at position i
+            int temp = data[i];
+
+            // shift earlier gap-sorted elements up until the correct location for data[i] is found
+            int j;
+            for (j = i; j >= gap && data[j - gap] > temp; j -= gap)
+            {
+                data[j] = data[j - gap];
             }
 
-            ++interval;
-            
-        }        
-       
-    }            
+            // put temp (the original data[i]) in its correct location
+            data[j] = temp;
+        }
+    }
 }
-
 
 void mergeSortDriver(std::vector<int>& data, std::vector<int>& copy)
 {
